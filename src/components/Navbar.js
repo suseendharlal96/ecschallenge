@@ -59,7 +59,7 @@ const Navbar = ({ authData, cart }) => {
           component={Link}
           to="/"
         >
-          Book Store
+          ECS Book Store
         </Typography>
         {authData ? (
           <>
