@@ -54,8 +54,8 @@ const Home = () => {
   });
 
   // useEffect(() => {
-    
-    // Got CORS for accessing using axios
+
+  // Got CORS for accessing using axios
 
   //   axios
   //     .get(
@@ -70,9 +70,19 @@ const Home = () => {
   //     });
   // }, []);
 
+  const handleSelect = (data) => {
+    const cartItems = [];
+    data.rowIds.forEach((id) => {
+      const obj = booksData.find((book) => book.id === +id);
+      cartItems.push(obj);
+    });
+    console.log(cartItems);
+  };
+
   return (
     <div style={{ height: "100vh", width: "100%" }}>
       <DataGrid
+        onSelectionChange={(data) => handleSelect(data)}
         rows={actualbooks}
         columns={columns}
         pageSize={50}

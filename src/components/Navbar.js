@@ -1,39 +1,41 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import React, { useState } from "react";
+import { useHistory, useLocation, Link } from "react-router-dom";
+import { connect, useDispatch } from "react-redux";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+  Avatar,
+  Button,
+  makeStyles,
+} from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
+import { logout } from "../store/actions/index";
 
-export default function MenuAppBar() {
-  const classes = useStyles();
-  const [auth, setAuth] = React.useState(true);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+const Navbar = ({ authData }) => {
+  console.log(authData);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
-  };
-
+  const useStyles = makeStyles((theme) => ({
+    root: {
+      flexGrow: 1,
+      marginBottom: 5,
+    },
+    menuButton: {
+      marginRight: theme.spacing(2),
+    },
+    large: {
+      width: theme.spacing(7),
+      height: theme.spacing(7),
+    },
+  }));
+  const classes = useStyles();
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -42,55 +44,76 @@ export default function MenuAppBar() {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    dispatch(logout());
+    handleClose();
+    history.push("/auth");
+  };
   return (
-    <div className={classes.root}>
-        {/* <FormGroup>
-            <FormControlLabel
-            control={<Switch checked={auth} onChange={handleChange} aria-label="login switch" />}
-            label={auth ? 'Logout' : 'Login'}
-            />
-        </FormGroup> */}
-      <AppBar position="static">
-        <Toolbar>
-          {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton> */}
-          <Typography variant="h6" className={classes.title}>
-            Photos
-          </Typography>
-          {auth && (
-            <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-              </Menu>
-            </div>
-          )}
-        </Toolbar>
-      </AppBar>
-    </div>
+    <AppBar position="fixed" className={classes.root}>
+      <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+        <Typography
+          variant="h6"
+          color="error"
+          style={{ textDecoration: "none" }}
+          component={Link}
+          to="/"
+        >
+          Book Store
+        </Typography>
+        {authData ? (
+          <>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <Avatar
+                alt="user"
+                src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+              />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>{authData.email}</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          </>
+        ) : (
+          location.pathname !== "/auth" && (
+            <Button
+              color="secondary"
+              variant="contained"
+              style={{ textDecoration: "none" }}
+              component={Link}
+              to="/auth"
+            >
+              Login
+            </Button>
+          )
+        )}
+      </Toolbar>
+    </AppBar>
   );
-}
+};
+
+const mapStateToProps = (state) => ({
+  authData: state?.authReducer?.authData?.result,
+});
+
+export default connect(mapStateToProps)(Navbar);
