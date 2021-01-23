@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, connect } from "react-redux";
 import { DataGrid } from "@material-ui/data-grid";
 
 import axios from "axios";
 
 import { booksData } from "../db/booksdata";
+import * as actions from "../store/actions/index";
 
 const columns = [
   { field: "id", headerName: "ID", width: 70 },
@@ -39,7 +41,8 @@ const columns = [
   },
 ];
 
-const Home = () => {
+const Home = ({ authData }) => {
+  const dispatch = useDispatch();
   const actualbooks = booksData.map((book) => {
     return {
       id: book.id,
@@ -74,9 +77,10 @@ const Home = () => {
     const cartItems = [];
     data.rowIds.forEach((id) => {
       const obj = booksData.find((book) => book.id === +id);
-      cartItems.push(obj);
+      cartItems.push({ ...obj, user: authData._id });
     });
     console.log(cartItems);
+    dispatch(actions.tempCart(cartItems));
   };
 
   return (
@@ -86,10 +90,14 @@ const Home = () => {
         rows={actualbooks}
         columns={columns}
         pageSize={50}
-        checkboxSelection
+        checkboxSelection={authData ? true : false}
       />
     </div>
   );
 };
 
-export default Home;
+const mapStateToProps = (state) => ({
+  authData: state?.authReducer?.authData?.result,
+});
+
+export default connect(mapStateToProps)(Home);

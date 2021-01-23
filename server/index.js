@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 
+import cartRouter from "./routes/cart.js";
 import userRouter from "./routes/user.js";
 
 dotenv.config();
@@ -12,6 +13,7 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
+app.use("/cart", cartRouter);
 app.use("/user", userRouter);
 
 const mongooseUrl = process.env.MONGOOSE;

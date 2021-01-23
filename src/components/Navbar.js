@@ -13,10 +13,10 @@ import {
   makeStyles,
 } from "@material-ui/core";
 
-import { logout } from "../store/actions/index";
+import { logout, addToCart } from "../store/actions/index";
 
-const Navbar = ({ authData }) => {
-  console.log(authData);
+const Navbar = ({ authData, cart }) => {
+  console.log({ authData, cart });
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
@@ -63,6 +63,26 @@ const Navbar = ({ authData }) => {
         </Typography>
         {authData ? (
           <>
+            <Button
+              color="secondary"
+              variant="contained"
+              style={{ textDecoration: "none" }}
+              component={Link}
+              to="/cart"
+              // onClick={() => dispatch(addToCart(cart))}
+            >
+              Your Cart
+            </Button>
+            {cart && cart.length > 0 && (
+              <Button
+                color="secondary"
+                variant="contained" 
+                style={{ textDecoration: "none" }}
+                onClick={() => dispatch(addToCart(cart))}
+              >
+                Add To Cart
+              </Button>
+            )}
             <IconButton
               aria-label="account of current user"
               aria-controls="menu-appbar"
@@ -114,6 +134,7 @@ const Navbar = ({ authData }) => {
 
 const mapStateToProps = (state) => ({
   authData: state?.authReducer?.authData?.result,
+  cart: state?.cartReducer?.tempCart,
 });
 
 export default connect(mapStateToProps)(Navbar);

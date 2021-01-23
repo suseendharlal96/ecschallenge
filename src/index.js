@@ -8,11 +8,11 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import authReducer from "./store/reducers/authReducer";
-// import postReducer from "./store/reducers/postReducer";
+import cartReducer from "./store/reducers/cartReducer";
 
 const rootReducer = combineReducers({
   authReducer,
-  // postReducer,
+  cartReducer,
 });
 
 const composeEnhancers =
